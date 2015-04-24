@@ -1,0 +1,2 @@
+To implement a computer program which plays 'The Name Game'.
+Details at: http://www.reddit.com/r/dailyprogrammer/comments/338p28/20150420_challenge_211_easy_the_name_game/
