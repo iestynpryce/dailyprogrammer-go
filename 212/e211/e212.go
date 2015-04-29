@@ -2,32 +2,39 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"os"
+	"unicode"
 )
 
 // define all constonants
-var consonant []byte = []byte{'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l',
+var consonant []rune = []rune{'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l',
 	'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'}
 
-func encode(in []byte) (out []byte) {
+func contains(haystack []rune, needle rune) bool {
+	for _, r := range consonant {
+		if needle == r {
+			return true
+		}
+	}
+	return false
+}
+
+func encode(in []rune) (out []rune) {
 	for _, c := range in {
-		// creating a single char byte slice for use with bytes functions.
-		buf := []byte(string(c))
+		// creating a single char rune slice for use with unicode functions.
 		out = append(out, c)
-		if bytes.Contains(consonant, bytes.ToLower(buf)) {
-			out = append(out, 'o', bytes.ToLower(buf)[0])
+		if contains(consonant, unicode.ToLower(c)) {
+			out = append(out, 'o', unicode.ToLower(c))
 		}
 	}
 	return out
 }
 
-func decode(in []byte) (out []byte) {
+func decode(in []rune) (out []rune) {
 	for i := 0; i < len(in); i++ {
-		buf := []byte(string(in[i]))
 		out = append(out, in[i])
-		if bytes.Contains(consonant, bytes.ToLower(buf)) {
+		if contains(consonant, unicode.ToLower(in[i])) {
 			i += 2
 		}
 	}
@@ -37,8 +44,8 @@ func decode(in []byte) (out []byte) {
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		ba := encode(scanner.Bytes())
-		fmt.Println(string(ba))
-		fmt.Println(string(decode(ba)))
+		rs := encode([]rune(scanner.Text()))
+		fmt.Println(string(rs))
+		fmt.Println(string(decode(rs)))
 	}
 }
