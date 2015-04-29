@@ -1,0 +1,8 @@
+Write a program wich encodes text into Rövarspråket.
+
+The rule for Rövarspråket is that any consonant should have a 'o' placed after it and then the constonant is repeated.
+
+i.e. Input:  That is a good job.
+     Output: Tothohatat isas a gogoodod jojobob.
+
+http://www.reddit.com/r/dailyprogrammer/comments/341c03/20150427_challenge_212_easy_r%C3%B6varspr%C3%A5ket/
