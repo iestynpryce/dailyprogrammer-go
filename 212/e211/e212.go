@@ -22,7 +22,6 @@ func contains(haystack []rune, needle rune) bool {
 
 func encode(in []rune) (out []rune) {
 	for _, c := range in {
-		// creating a single char rune slice for use with unicode functions.
 		out = append(out, c)
 		if contains(consonant, unicode.ToLower(c)) {
 			out = append(out, 'o', unicode.ToLower(c))
