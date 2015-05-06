@@ -1,0 +1,18 @@
+Prounounce hex.
+
+0xA0 	“Atta”
+0xB0 	“Bibbity”
+0xC0 	“City”
+0xD0 	“Dickety”
+0xE0 	“Ebbity”
+0xF0 	“Fleventy”
+0xA000 	"Atta-bitey"
+0xB000 	"Bibbity-bitey"
+0xC000 	"City-bitey"
+0xD000 	"Dickety-bitey"
+0xE000 	"Ebbity-bitey"
+0xF000 	"Fleventy-bitey"
+
+Combinations like 0xABCD are prounounced "atta-bee bitey city-dee"
+
+Full description at http://www.reddit.com/r/dailyprogrammer/comments/34rxkc/20150504_challenge_213_easy_pronouncing_hex/
