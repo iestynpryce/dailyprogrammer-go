@@ -1,3 +1,10 @@
+/* HEX pronouncing software
+ * i.e.
+ *     input:  00xAA02
+ *     output: atta-a bitey two
+ *
+ * Takes input on STDIN i.e. echo 0xAA02 | $program
+ */
 package main
 
 import (
@@ -52,15 +59,16 @@ var second_byte = map[string]string{
 	"F":  "fleventy",
 }
 
-func pronounce_twochar(text string, i *int, d int) {
+func pronounce_twobyte(text string, i *int, d int) {
+	/* Deal with two byte pairs which start with a number i.e 19 or 2A */
 	if strings.Contains("123456789", string(text[*i])) && d > 1 {
 		if text[*i] == '1' &&
 			strings.Contains("0123456789", string(text[*i+1])) {
 			fmt.Print(second_byte[text[*i:*i+2]])
-			*i++
 			if d > 3 {
 				fmt.Print(" bitey ")
 			}
+			*i++
 		} else {
 			fmt.Print(second_byte[string(text[*i])+"0"])
 			next := string(text[*i+1])
@@ -68,7 +76,7 @@ func pronounce_twochar(text string, i *int, d int) {
 				fmt.Print("-")
 			}
 		}
-	} else {
+	} else { /* Deal with two byte pair starting with A-F i.e. A1 or CF */
 		fmt.Print(second_byte[string(text[*i])])
 		if string(text[*i]) != "0" && string(text[*i+1]) != "0" {
 			fmt.Print("-")
@@ -78,13 +86,14 @@ func pronounce_twochar(text string, i *int, d int) {
 			}
 			*i++
 		} else if d > 3 {
+			/* For situations like A000 we want a '-' before 'bitey' */
 			fmt.Print("-")
 		}
 	}
 }
 
 func pronounce_hex(text string) {
-	if strings.HasPrefix(text, "0x") { // check it's a hex value
+	if strings.HasPrefix(text, "0x") && len(text) < 7 { // check it's a hex value
 		fmt.Print(text + ": ")
 
 		subtext := text[2:]
@@ -108,7 +117,7 @@ func pronounce_hex(text string) {
 			switch d {
 			case 4:
 				{
-					pronounce_twochar(subtext, &i, d)
+					pronounce_twobyte(subtext, &i, d)
 				}
 			case 3:
 				{
@@ -121,7 +130,7 @@ func pronounce_hex(text string) {
 				}
 			case 2:
 				{
-					pronounce_twochar(subtext, &i, d)
+					pronounce_twobyte(subtext, &i, d)
 				}
 			case 1:
 				{
@@ -135,6 +144,8 @@ func pronounce_hex(text string) {
 		if last_zero {
 			fmt.Print("zero")
 		}
+	} else {
+		fmt.Fprintf(os.Stderr, "Invalid HEX value or more than 4 bytes")
 	}
 	fmt.Println()
 }
