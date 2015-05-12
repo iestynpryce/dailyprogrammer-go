@@ -1,0 +1,3 @@
+Given a string, what is the laziest way to type it out using hunt and peck?
+
+Details: http://www.reddit.com/r/dailyprogrammer/comments/351b0o/20150506_challenge_213_intermediate_the_lazy/
