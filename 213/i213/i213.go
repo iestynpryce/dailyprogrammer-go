@@ -78,9 +78,14 @@ func key_to_position(k [][]rune) (mapping map[rune][]Point) {
 }
 
 func print_action(c rune, p *Point, direction string, distance int, kb [][]rune) {
-	fmt.Printf("%s: Move %s hand from %s (effort: %d)\n",
-		printable(c), direction, printable(kb[p.y][p.x]),
-		distance)
+	if distance > 0 {
+		fmt.Printf("%s: Move %s hand from %s (effort: %d)\n",
+			printable(c), direction, printable(kb[p.y][p.x]),
+			distance)
+	} else {
+		fmt.Printf("%s: Use %s hand again (effort: %d)\n",
+			printable(c), direction, distance)
+	}
 }
 
 func print_first(p *Point, direction string, kb [][]rune) {
@@ -108,25 +113,30 @@ func next_key(c rune, left *Point, right *Point, kb [][]rune,
 	distanceLeft, leftTemp := min_key_distance(target, left)
 	distanceRight, rightTemp := min_key_distance(target, right)
 
+	var distance int
+
 	if distanceLeft < distanceRight {
 		if unicode.IsUpper(c) {
 			distanceRight, rightTemp := min_key_distance(keyMap['^'], right)
 			print_action('^', right, "right", distanceRight, kb)
 			*right = rightTemp
+			distance += distanceRight
 		}
 		print_action(c, left, "left", distanceLeft, kb)
 		*left = leftTemp
-		return distanceLeft
+		distance += distanceLeft
 	} else {
 		if unicode.IsUpper(c) {
 			distanceLeft, leftTemp := min_key_distance(keyMap['^'], left)
 			print_action('^', left, "left", distanceLeft, kb)
 			*left = leftTemp
+			distance += distanceLeft
 		}
 		print_action(c, right, "right", distanceRight, kb)
 		*right = rightTemp
-		return distanceRight
+		distance += distanceRight
 	}
+	return distance
 }
 
 func laziest_route(s string, kb [][]rune, keyMap map[rune][]Point) {
