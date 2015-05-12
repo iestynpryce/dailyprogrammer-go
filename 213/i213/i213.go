@@ -4,6 +4,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math/rand"
 	"os"
 	"unicode"
 )
@@ -25,11 +26,23 @@ func (p *Point) distance(q *Point) int {
 	return xdiff + ydiff
 }
 
-func key_distance(points []Point, p *Point) (distance int, q Point) {
+func min_key_distance(points []Point, p *Point) (distance int, q Point) {
 	distance = 100 // pick a very high value
 	for _, point := range points {
 		point_dist := point.distance(p)
 		if point_dist < distance {
+			distance = point_dist
+			q = point
+		}
+	}
+	return
+}
+
+func max_key_distance(points []Point, p *Point) (distance int, q Point) {
+	distance = -1 // pick a low value
+	for _, point := range points {
+		point_dist := point.distance(p)
+		if point_dist >= distance {
 			distance = point_dist
 			q = point
 		}
@@ -64,9 +77,14 @@ func key_to_position(k [][]rune) (mapping map[rune][]Point) {
 	return
 }
 
-func print_action(left, right Point, kb [][]rune) {
-	fmt.Printf("%s: Use left hand\n", printable(kb[left.y][left.x]))
-	fmt.Printf("%s: Use right hand\n", printable(kb[right.y][right.x]))
+func print_action(c rune, p *Point, direction string, distance int, kb [][]rune) {
+	fmt.Printf("%s: Move %s hand from %s (effort: %d)\n",
+		printable(c), direction, printable(kb[p.y][p.x]),
+		distance)
+}
+
+func print_first(p *Point, direction string, kb [][]rune) {
+	fmt.Printf("%s: Use %s hand\n", printable(kb[p.y][p.x]), direction)
 }
 
 /* turn a rune into a printable string i.e. uppercase and replacing special
@@ -84,6 +102,33 @@ func printable(r rune) string {
 	return s
 }
 
+func next_key(c rune, left *Point, right *Point, kb [][]rune,
+	keyMap map[rune][]Point) int {
+	target := keyMap[unicode.ToLower(c)]
+	distanceLeft, leftTemp := min_key_distance(target, left)
+	distanceRight, rightTemp := min_key_distance(target, right)
+
+	if distanceLeft < distanceRight {
+		if unicode.IsUpper(c) {
+			distanceRight, rightTemp := min_key_distance(keyMap['^'], right)
+			print_action('^', right, "right", distanceRight, kb)
+			*right = rightTemp
+		}
+		print_action(c, left, "left", distanceLeft, kb)
+		*left = leftTemp
+		return distanceLeft
+	} else {
+		if unicode.IsUpper(c) {
+			distanceLeft, leftTemp := min_key_distance(keyMap['^'], left)
+			print_action('^', left, "left", distanceLeft, kb)
+			*left = leftTemp
+		}
+		print_action(c, right, "right", distanceRight, kb)
+		*right = rightTemp
+		return distanceRight
+	}
+}
+
 func laziest_route(s string, kb [][]rune, keyMap map[rune][]Point) {
 
 	var left, right Point
@@ -92,46 +137,38 @@ func laziest_route(s string, kb [][]rune, keyMap map[rune][]Point) {
 	var totalEffort int = 0
 
 	for _, c := range s {
+
+		target := keyMap[unicode.ToLower(c)]
+
 		if !leftSet || !rightSet {
-			r := unicode.ToLower(c)
-			p := keyMap[r][0] // exploit knowledge that chars only have 1 key
-			if p.x > 4 {
-				left = keyMap['^'][0]
-				leftSet = true
-			} else {
-				right = keyMap['^'][1]
-				rightSet = true
-			}
-			if unicode.IsUpper(c) {
-				if rightSet {
-					left = p
-					leftSet = true
-				} else {
-					right = p
+			// Randomly pick a start key if there is a choice
+			p := target[rand.Intn(len(target))]
+
+			if !leftSet && p.x > 4 {
+				if unicode.IsUpper(c) {
+					_, right = max_key_distance(keyMap['^'], &left)
 					rightSet = true
+					print_first(&right, "right", kb)
 				}
+				left = p
+				leftSet = true
+				print_first(&left, "left", kb)
 			}
-			print_action(left, right, kb)
+			if !rightSet && p.x <= 4 {
+				if unicode.IsUpper(c) {
+					_, left = max_key_distance(keyMap['^'], &right)
+					leftSet = true
+					print_first(&left, "left", kb)
+				}
+				right = p
+				rightSet = true
+				print_first(&right, "right", kb)
+			}
 			continue
 		}
 
-		target := keyMap[unicode.ToLower(c)]
-		distanceLeft, leftTemp := key_distance(target, &left)
-		distanceRight, rightTemp := key_distance(target, &right)
+		totalEffort += next_key(c, &left, &right, kb, keyMap)
 
-		if distanceLeft < distanceRight {
-			fmt.Printf("%s: Move left hand from %s (effort: %d)\n",
-				printable(c), printable(kb[left.y][left.x]),
-				distanceLeft)
-			left = leftTemp
-			totalEffort += distanceLeft
-		} else {
-			fmt.Printf("%s: Move right hand from %s (effort: %d)\n",
-				printable(c), printable(kb[right.y][right.x]),
-				distanceRight)
-			right = rightTemp
-			totalEffort += distanceRight
-		}
 	}
 	fmt.Printf("Total effort: %d\n", totalEffort)
 }
