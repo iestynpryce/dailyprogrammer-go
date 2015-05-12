@@ -1,0 +1,3 @@
+Calculate the standard deviation of a collection of numbers.
+
+http://www.reddit.com/r/dailyprogrammer/comments/35l5eo/20150511_challenge_214_easy_calculating_the/
