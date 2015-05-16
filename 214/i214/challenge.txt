@@ -1,0 +1,3 @@
+Taking an input of a set of different coloured rectangles, which are then piled on top of each other - how many different colours can we see at the end? And how many 'pixles' are there of each?
+
+http://www.reddit.com/r/dailyprogrammer/comments/35s2ds/20150513_challenge_214_intermediate_pile_of_paper/
