@@ -1,0 +1,3 @@
+Find the n-sad cycle for a number.
+
+http://www.reddit.com/r/dailyprogrammer/comments/36cyxf/20150518_challenge_215_easy_sad_cycles/
