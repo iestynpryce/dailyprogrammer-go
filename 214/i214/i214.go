@@ -32,18 +32,18 @@ type Counts []*Count
 func (s Counts) Len() int      { return len(s) }
 func (s Counts) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
 
-type ByCount struct{ Counts }
+type ByValue struct{ Counts }
 
-func (s ByCount) Less(i, j int) bool {
-	return s.Counts[i].count < s.Counts[j].count
+func (s ByValue) Less(i, j int) bool {
+	return s.Counts[i].value < s.Counts[j].value
 }
 
-func calculate_colors(rects []Rect) {
-	nrects := len(rects)
+func calculate_colors(rects *[]Rect) {
+	nrects := len(*rects)
 	canvas := make(map[Point]int)
 
 	for i := nrects - 1; i >= 0; i-- {
-		r := rects[i]
+		r := (*rects)[i]
 		for j := r.x; j < (r.w + r.x); j++ {
 			for k := r.y; k < (r.h + r.y); k++ {
 				if canvas[Point{j, k}] == 0 {
@@ -64,7 +64,7 @@ func calculate_colors(rects []Rect) {
 		colour_array[i] = &Count{k, v}
 		i++
 	}
-	sort.Sort(ByCount{colour_array})
+	sort.Sort(ByValue{colour_array})
 	for i := range colour_array {
 		fmt.Println(colour_array[i].value, colour_array[i].count)
 	}
@@ -118,5 +118,5 @@ func main() {
 		rects = append(rects, r)
 	}
 
-	calculate_colors(rects)
+	calculate_colors(&rects)
 }
