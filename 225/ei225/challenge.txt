@@ -1,0 +1,4 @@
+https://www.reddit.com/r/dailyprogrammer/comments/3esrkm/20150727_challenge_225_easyintermediate/
+
+The challenge is to remove 'boxes' for adverts or images from a series of text.
+
