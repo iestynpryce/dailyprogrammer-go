@@ -35,6 +35,9 @@ func deColumize(filename string) {
 	var firstline bool = true
 	var linestart bool = true
 
+	var feature_text bytes.Buffer
+	feature_text.WriteRune('(')
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		// Skip the first line, info not needed
@@ -60,6 +63,8 @@ func deColumize(filename string) {
 
 			if !feature_plus && !feature_pipe {
 				buffer.WriteRune(c)
+			} else if feature_pipe {
+				feature_text.WriteRune(c)
 			}
 		}
 
@@ -73,6 +78,10 @@ func deColumize(filename string) {
 			linestart = true
 		} else if !linestart {
 			fmt.Print(" ")
+		} else if linestart {
+			feature_text.WriteRune(')')
+			fmt.Printf("%s", feature_text.String())
+			feature_text.Truncate(1)
 		}
 
 		for i, c := range stripped {
